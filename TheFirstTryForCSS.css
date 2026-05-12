@@ -1,0 +1,12 @@
+section {
+    display: grid;
+    grid-template-areas:
+     "header1 header2" 
+}
+
+.article1{
+    position: relative;
+    top: 70px;
+    left: 20px;
+    border: 1px solid black;
+}
