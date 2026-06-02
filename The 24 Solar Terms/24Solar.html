@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二十四节气 · 实时天文展示</title>
+    <link rel="stylesheet" href="24Solar.css">
+</head>
+<body>
+
+<div class="app-container">
+    <header class="app-header">
+        <h1>二十四节气</h1>
+        <div class="year-selector">
+            <button class="year-btn" id="btnPrev" title="上一年">←</button>
+            <span class="year-display" id="yearDisplay">2026</span>
+            <button class="year-btn" id="btnNext" title="下一年">→</button>
+        </div>
+        <span class="year-today" id="btnToday">回到今年</span>
+    </header>
+
+    <section class="ecliptic-section" id="eclipticSection">
+        <svg class="ecliptic-svg" id="eclipticSvg" viewBox="0 0 520 520"></svg>
+    </section>
+
+    <section class="info-section" id="infoSection">
+        <div class="current-term-name" id="termName">—</div>
+        <div class="term-date" id="termDate"></div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="countdown" id="countdown"></div>
+        <div class="term-description" id="termDesc"></div>
+        <div class="pentads" id="pentads"></div>
+    </section>
+</div>
+
+<script src="24Solar.js"></script>
+
+</body>
+</html>

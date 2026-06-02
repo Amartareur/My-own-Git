@@ -1,0 +1,362 @@
+/* ============================================
+   二十四节气 - 实时展示系统
+   简约中式风格 (Minimalist Chinese Aesthetic)
+   ============================================ */
+
+/* --- 基础重置 & 字体 --- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 四季色调 */
+    --spring: #8bab94;
+    --spring-light: #e8f0ea;
+    --summer: #c47a5a;
+    --summer-light: #fceee8;
+    --autumn: #b8945a;
+    --autumn-light: #faf3e6;
+    --winter: #7a9bb5;
+    --winter-light: #eaf0f5;
+
+    /* 中性色 */
+    --bg: #fafaf6;
+    --surface: #ffffff;
+    --text-primary: #3a3a3a;
+    --text-secondary: #8a8a80;
+    --text-muted: #b5b5aa;
+    --border: #e8e5df;
+    --ring: #d4d0c8;
+    --ring-light: #e8e5df;
+
+    /* 太阳标记 */
+    --sun-dot: #e8875b;
+    --sun-glow: rgba(232, 135, 91, 0.35);
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family:
+        "PingFang SC",
+        "Noto Sans SC",
+        "Microsoft YaHei",
+        "Hiragino Sans GB",
+        sans-serif;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    transition: background-color 0.8s ease;
+}
+
+/* --- 主容器 --- */
+.app-container {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* --- 头部 --- */
+.app-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.app-header h1 {
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.6em;
+    color: var(--text-primary);
+    text-indent: 0.6em;
+}
+
+/* --- 年份选择器 --- */
+.year-selector {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.year-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.year-btn:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+    background: var(--bg);
+}
+
+.year-display {
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    color: var(--text-primary);
+    min-width: 5rem;
+    text-align: center;
+}
+
+.year-today {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+}
+
+.year-today:hover {
+    color: var(--text-secondary);
+}
+
+/* --- 黄经环区域 --- */
+.ecliptic-section {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    aspect-ratio: 1;
+}
+
+.ecliptic-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* 环上的标记点 */
+.marker-dot {
+    fill: var(--ring);
+    transition: fill 0.4s ease, r 0.4s ease;
+}
+
+.marker-dot.past {
+    fill: var(--ring-light);
+}
+
+.marker-dot.future {
+    fill: var(--ring);
+}
+
+.marker-dot.current {
+    fill: var(--text-primary);
+    r: 6;
+}
+
+/* 环上的节气标签 */
+.term-label {
+    font-size: 11px;
+    fill: var(--text-muted);
+    text-anchor: middle;
+    dominant-baseline: central;
+    transition: fill 0.4s ease, font-size 0.4s ease;
+    pointer-events: none;
+    user-select: none;
+}
+
+.term-label.past {
+    fill: var(--ring-light);
+}
+
+.term-label.current {
+    fill: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* 太阳位置标记 */
+.sun-marker {
+    fill: var(--sun-dot);
+    filter: drop-shadow(0 0 6px var(--sun-glow));
+    transition: transform 0.6s ease;
+}
+
+.sun-marker-inner {
+    fill: var(--sun-dot);
+}
+
+/* 环形季节弧 */
+.season-arc {
+    fill: none;
+    stroke-width: 3;
+    opacity: 0.5;
+}
+
+.season-arc.spring { stroke: var(--spring); }
+.season-arc.summer { stroke: var(--summer); }
+.season-arc.autumn { stroke: var(--autumn); }
+.season-arc.winter { stroke: var(--winter); }
+
+/* 主环 */
+.main-ring {
+    fill: none;
+    stroke: var(--ring);
+    stroke-width: 1;
+}
+
+/* 刻度线 */
+.tick-line {
+    stroke: var(--ring);
+    stroke-width: 1;
+}
+
+/* --- 信息面板 --- */
+.info-section {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.current-term-name {
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    color: var(--text-primary);
+    position: relative;
+}
+
+.current-term-name::before,
+.current-term-name::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+}
+
+.current-term-name::before {
+    right: calc(100% + 12px);
+}
+
+.current-term-name::after {
+    left: calc(100% + 12px);
+}
+
+.term-date {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+.countdown {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.countdown strong {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.term-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.7;
+    max-width: 320px;
+}
+
+/* 三候 */
+.pentads {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pentad {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.8rem;
+    border-radius: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.pentad.active {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    background: var(--bg);
+}
+
+/* 进度条 */
+.progress-bar-container {
+    width: 100%;
+    max-width: 300px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.5s ease, background 0.8s ease;
+}
+
+/* --- 响应式 --- */
+@media (max-width: 520px) {
+    .app-container {
+        gap: 1.5rem;
+    }
+
+    .app-header h1 {
+        font-size: 1.3rem;
+        letter-spacing: 0.4em;
+        text-indent: 0.4em;
+    }
+
+    .current-term-name {
+        font-size: 1.8rem;
+        letter-spacing: 0.3em;
+    }
+
+    .current-term-name::before,
+    .current-term-name::after {
+        width: 28px;
+    }
+
+    .term-label {
+        font-size: 10px;
+    }
+
+    .term-label.current {
+        font-size: 11px;
+    }
+}
